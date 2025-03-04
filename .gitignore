@@ -8,6 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+
+# Frontend
 dist
 dist-ssr
 *.local
@@ -23,3 +25,41 @@ dist-ssr
 *.sln
 *.sw?
 frontend/package-lock.json
+
+# Python/Backend
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+.env
+.venv
+venv/
+ENV/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Application specific
+backend/models/
+backend/*.h5
+backend/data/
+backend/app.log
+backend/uploads/
+backend\.venv
