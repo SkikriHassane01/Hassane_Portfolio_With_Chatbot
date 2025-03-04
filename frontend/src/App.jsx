@@ -5,6 +5,8 @@ import Footer from './components/layout/Footer'
 import About from './components/sections/About'
 import TechSphere from './components/sections/TechSphere'
 import Projects from './components/sections/Projects'
+import Certificates from './components/sections/Certificates'
+import Skills from './components/sections/Skills'
 function App() {
   return (
     <ThemeProvider>
@@ -14,6 +16,8 @@ function App() {
           <About />
           <TechSphere />
           <Projects />
+          <Certificates />
+          <Skills />
         </main>
         <Footer />
       </div>
