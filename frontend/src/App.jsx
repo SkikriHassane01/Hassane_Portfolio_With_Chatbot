@@ -4,6 +4,7 @@ import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import About from './components/sections/About'
 import TechSphere from './components/sections/TechSphere'
+import Projects from './components/sections/Projects'
 function App() {
   return (
     <ThemeProvider>
@@ -12,6 +13,7 @@ function App() {
         <main>
           <About />
           <TechSphere />
+          <Projects />
         </main>
         <Footer />
       </div>
