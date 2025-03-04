@@ -7,6 +7,9 @@ import TechSphere from './components/sections/TechSphere'
 import Projects from './components/sections/Projects'
 import Certificates from './components/sections/Certificates'
 import Skills from './components/sections/Skills'
+import Contact from './components/sections/Contact'
+import ChatWindow from './components/chatbot/ChatWindow';
+
 function App() {
   return (
     <ThemeProvider>
@@ -18,8 +21,10 @@ function App() {
           <Projects />
           <Certificates />
           <Skills />
+          <Contact />
         </main>
         <Footer />
+        <ChatWindow />
       </div>
     </ThemeProvider>
   )
