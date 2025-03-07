@@ -63,3 +63,4 @@ backend/data/
 backend/app.log
 backend/uploads/
 backend\.venv
+backend/mlruns/
