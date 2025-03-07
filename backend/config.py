@@ -12,7 +12,7 @@ class Config:
     DEBUG = False
     TESTING = False
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    BASE_DIR = Path(__file__).resolve().parent.parent
+    BASE_DIR = Path(__file__).resolve().parent
     
     # Azure OpenAI settings
     AZURE_OPENAI_BASE_URL = os.environ.get('AZURE_OPENAI_BASE_URL', 'https://models.inference.ai.azure.com')
@@ -20,8 +20,10 @@ class Config:
     AZURE_OPENAI_MODEL = os.environ.get('AZURE_OPENAI_MODEL', 'gpt-4o-mini')
     
     # Model and data settings
-    MODEL_PATH = os.environ.get('MODEL_PATH', 'models/chatbot_model_improved.h5')
+    MODEL_PATH = os.environ.get('MODEL_PATH', 'models/chatbot_model.h5')
     INTENTS_PATH = os.environ.get('INTENTS_PATH', 'data/intents.json')
+    MODEL_INFO = os.environ.get('MODEL_INFO_PATH','models/model_info.pkl')
+    CLASSED_PATH = os.environ.get('CLASSES_PATH','models/classes.pkl')
     CONFIDENCE_THRESHOLD = float(os.environ.get('CONFIDENCE_THRESHOLD', '0.9'))
 
 class DevelopmentConfig(Config):
