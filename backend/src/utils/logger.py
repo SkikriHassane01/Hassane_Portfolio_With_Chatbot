@@ -1,13 +1,16 @@
 import os 
 import logging
 from datetime import datetime
+from pathlib import Path
+
 
 def setup_logger(name='chatbot'):
     """
     Set up a logger that writes to both console and file
     """
-    
-    os.makedirs('logs', exist_ok=True)
+    root_dir = Path(__file__).parent.parent.parent
+    logs_dir = root_dir / "logs"
+    os.makedirs(logs_dir, exist_ok=True)
     
     # create the logger 
     logger = logging.getLogger(name)
@@ -15,7 +18,7 @@ def setup_logger(name='chatbot'):
     
     if not logger.handlers:
         # create a file handler 
-        log_file = f"logs/{name}_{datetime.now().strftime('%Y%m%d')}.log"
+        log_file = f"{logs_dir}/{name}_{datetime.now().strftime('%Y%m%d')}.log"
         file_handler = logging.FileHandler(log_file)
         file_handler.setLevel(logging.INFO)
         
