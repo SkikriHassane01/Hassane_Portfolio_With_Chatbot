@@ -41,7 +41,7 @@ class IntentClassifier:
         # Paths
         self.base_dir = config.BASE_DIR
         self.model_path = self._get_full_path(model_path or config.MODEL_PATH)
-        self.classes_path = self._get_full_path(config.CLASSED_PATH)
+        self.classes_path = self._get_full_path(config.CLASSES_PATH)
         self.model_info_path = self._get_full_path(config.MODEL_INFO)
         self.intents_path = self._get_full_path(config.INTENTS_PATH)
         
