@@ -345,16 +345,19 @@ class ChatbotModelTrainer:
         return callbacks
     
     # TODO: train the model
-    def train_model(self, validation_split: float = 0.2) -> Dict:
+    def train_model(self, validation_split: float = None) -> Dict:
         """
         Train the model with the prepared data.
         
         Args:
-            validation_split: Fraction of data to use for validation
+            validation_split: Fraction of data to use for validation. If None, uses Config value.
             
         Returns:
             Dictionary with training results
         """
+        # Use Config validation split if none provided
+        validation_split = validation_split or Config.VALIDATION_SPLIT
+        
         self.logger.info("Training model (this may take a while)...")
         mlflow.log_param("validation_split", validation_split)
         
@@ -362,11 +365,11 @@ class ChatbotModelTrainer:
         
         hist = self.model.fit(
             self.X_data, self.y_data,
-            epochs = self.num_epochs,
-            batch_size=16,
+            epochs=self.num_epochs,
+            batch_size=Config.BATCH_SIZE,
             verbose=0,  # Hide the progress bar
             validation_split=validation_split,
-            callbacks= callbacks
+            callbacks=callbacks
         )
         
         # Get best metrics from the best validation accuracy epoch
@@ -472,16 +475,18 @@ class ChatbotModelTrainer:
         self.logger.info(">>>> Starting model training process with sentence transformer embeddings ...")
         
         # setup MLflow tracking - setting local directory for tracking
-        mlflow.set_tracking_uri("file:" + str(self.base_dir / "mlruns"))
+        mlflow.set_tracking_uri("file:" + str(self.base_dir / Config.MLRUNS_DIR))
         
         # setup the workflow
         mlflow.set_experiment("Chatbot intent classification")
         
         # start MLflow run
         with mlflow.start_run(run_name="Sentence_transformer_model"):
-            #log parameters 
+            # Log training configuration
             mlflow.log_param('embedding_method', "sentence_transformer")
             mlflow.log_param('num_epochs', self.num_epochs)
+            mlflow.log_param('batch_size', Config.BATCH_SIZE)
+            mlflow.log_param('learning_rate', Config.LEARNING_RATE)
             mlflow.log_param("use_data_augmentation", self.use_data_augmentation)
 
             # load and process data
