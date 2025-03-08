@@ -1,80 +1,57 @@
-name: Deploy Frontend to GitHub Pages
+name: Deploy to GitHub Pages
 
+# Trigger this paths on push to main branch
 on:
   push:
     branches: [ main ]
     paths:
       - 'frontend/**'
-      - '.github/workflows/frontend-deploy.yml'
+      - '.github/workflows/github-pages-deploy.yml'
 
 permissions:
   contents: write
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Fetch all history for proper deployment
-
-      - name: Verify frontend directory
-        run: |
-          ls -la ./frontend
-          echo "Checking for package files:"
-          ls -la ./frontend/package*
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build with Docker
+    defaults:
+      run:
         working-directory: ./frontend
-        env:
-          # Set the public path to match GitHub Pages deployment
-          PUBLIC_URL: /${{ github.event.repository.name }}
-        run: |
-          # Pass the PUBLIC_URL to Docker build
-          docker build --build-arg PUBLIC_URL=/${{ github.event.repository.name }} -t portfolio-frontend .
-          docker create --name temp-container portfolio-frontend
-          docker cp temp-container:/usr/share/nginx/html ../dist-frontend
-          docker rm temp-container
+    
+    steps:
+      # Step 1: Setup environment
+      - name: Checkout repository
+        uses: actions/checkout@v3
       
-      - name: Copy public assets
-        run: |
-          if [ -d "./frontend/public" ]; then
-            mkdir -p ./dist-frontend/public
-            cp -r ./frontend/public/* ./dist-frontend/public/ || echo "No files to copy"
-            
-            # Ensure SVG files are properly copied
-            if [ -d "./frontend/public/assets/images" ]; then
-              mkdir -p ./dist-frontend/public/assets/images
-              find ./frontend/public/assets/images -name "*.svg" -exec cp {} ./dist-frontend/public/assets/images/ \;
-              echo "SVG files in source directory:"
-              find ./frontend/public/assets/images -name "*.svg"
-              echo "SVG files in destination directory:"
-              find ./dist-frontend/public/assets/images -name "*.svg"
-            fi
-            
-            echo "Public directory contents after copy:"
-            ls -la ./dist-frontend/public || echo "Public directory not created"
-          else
-            echo "No public directory found in frontend"
-          fi
-          
-      - name: Ensure .nojekyll exists
-        run: touch ./dist-frontend/.nojekyll
-
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      # Step 2: Build the application
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build application
+        env:
+          PUBLIC_URL: /${{ github.event.repository.name }}
+        run: npm run build
+      
+      # Step 3: Prepare and deploy
+      - name: Add .nojekyll file
+        run: touch build/.nojekyll
+      
       - name: Deploy to GitHub Pages
-        id: deployment
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist-frontend
+          folder: frontend/build
           branch: gh-pages
-          token: ${{ github.token }}
-          
-      - name: Display deployment information
+          clean: true
+      
+      # Step 4: Verification
+      - name: Deployment complete
         run: |
-          echo "Deployment completed!"
-          echo "The site should be available at: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-          echo "If not showing immediately, please wait a few minutes for GitHub Pages to build."
+          echo "✅ Deployment complete!"
+          echo "📱 Site available at: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
