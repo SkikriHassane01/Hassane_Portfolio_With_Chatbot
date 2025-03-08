@@ -35,6 +35,9 @@ jobs:
           docker create --name temp-container portfolio-frontend
           docker cp temp-container:/usr/share/nginx/html ../dist-frontend
           docker rm temp-container
+          
+      - name: Ensure .nojekyll exists
+        run: touch ./dist-frontend/.nojekyll
 
       - name: Deploy to GitHub Pages
         id: deployment
