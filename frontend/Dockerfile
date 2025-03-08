@@ -2,8 +2,10 @@ FROM node:20-alpine as build
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+# Copy only package.json first, package-lock might not exist
+COPY package.json ./
+# Use npm install instead of npm ci to generate package-lock if missing
+RUN npm install
 
 #Copy the source code
 COPY . .
