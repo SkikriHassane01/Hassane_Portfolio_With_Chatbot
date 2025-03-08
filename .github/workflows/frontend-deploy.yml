@@ -7,7 +7,6 @@ on:
       - 'frontend/**'
       - '.github/workflows/frontend-deploy.yml'
 
-# Add permissions for GitHub Actions
 permissions:
   contents: write
 
@@ -17,6 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for proper deployment
 
       - name: Verify frontend directory
         run: |
@@ -36,9 +37,16 @@ jobs:
           docker rm temp-container
 
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist-frontend  # The folder the action should deploy
-          branch: gh-pages  # The branch the action should deploy to
-          # Use the built-in token with write permissions we configured above
+          folder: dist-frontend
+          branch: gh-pages
           token: ${{ github.token }}
+          
+      - name: Display deployment information
+        run: |
+          echo "Deployment completed!"
+          echo "The site should be available at: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo "If not showing immediately, please wait a few minutes for GitHub Pages to build."
+          echo "Check repository settings → Pages to confirm configuration."
