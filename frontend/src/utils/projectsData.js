@@ -520,7 +520,7 @@ const projectsData = [
       id: 43,
       title: "Data Science Roadmap",
       description: "Structured learning path for data science mastery, from foundational skills to advanced techniques, with project recommendations and resource links.",
-      image: "https://private-user-images.githubusercontent.com/180952453/365686943-f1baf0a9-1a8e-4978-b3ec-93d4044419c8.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDA4NjkxMDcsIm5iZiI6MTc0MDg2ODgwNywicGF0aCI6Ii8xODA5NTI0NTMvMzY1Njg2OTQzLWYxYmFmMGE5LTFhOGUtNDk3OC1iM2VjLTkzZDQwNDQ0MTljOC5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzAxJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMwMVQyMjQwMDdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT03YjlkYTc3MzdmYzM4N2IwN2JiNDEwZWU0N2VkMjM4MTgwOTJiZGI5N2Y5ZDE0Y2IyOGExNzNhNWM5ZDhiNjlmJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.ldINPjR2pyaZ5e8mdSvyS64zgi3TLjtOd_rbjlbjMcg",
+      image: "https://media.geeksforgeeks.org/wp-content/cdn-uploads/20201204213645/Data-Science-Roadmap.png",
       technologies: ["Data Science", "Python", "Machine Learning", "Statistics"],
       category: "Tutorial",
       tags: ["Learning Path", "Data Science", "Career Guide", "Educational"],
