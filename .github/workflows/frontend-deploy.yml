@@ -40,17 +40,30 @@ jobs:
           docker cp temp-container:/usr/share/nginx/html ../dist-frontend
           docker rm temp-container
       
-      # Ensure the public/assets directory is correctly copied
-      - name: Copy public assets if they exist
+      - name: Copy public assets
         run: |
           if [ -d "./frontend/public" ]; then
             mkdir -p ./dist-frontend/public
             cp -r ./frontend/public/* ./dist-frontend/public/ || echo "No files to copy"
+            
+            # Ensure SVG files are properly copied
+            if [ -d "./frontend/public/assets/images" ]; then
+              mkdir -p ./dist-frontend/public/assets/images
+              find ./frontend/public/assets/images -name "*.svg" -exec cp {} ./dist-frontend/public/assets/images/ \;
+              echo "SVG files in source directory:"
+              find ./frontend/public/assets/images -name "*.svg"
+              echo "SVG files in destination directory:"
+              find ./dist-frontend/public/assets/images -name "*.svg"
+            fi
+            
             echo "Public directory contents after copy:"
             ls -la ./dist-frontend/public || echo "Public directory not created"
           else
             echo "No public directory found in frontend"
           fi
+          
+      - name: Ensure .nojekyll exists
+        run: touch ./dist-frontend/.nojekyll
 
       - name: Deploy to GitHub Pages
         id: deployment
