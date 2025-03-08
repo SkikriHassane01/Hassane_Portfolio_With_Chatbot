@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, Globe } from 'lucide-react';
+// Import the image directly
+import AboutPhoto from '../../assets/images/About_photo.png';
 
 const AboutSection = () => {
   const socialLinks = [
@@ -73,7 +75,7 @@ const AboutSection = () => {
             >
               <div className="aspect-square w-72 h-72 overflow-hidden rounded-full border-4 border-blue-100 dark:border-blue-900/30">
                 <img
-                  src="./public/assets/images/About_photo.png"
+                  src={AboutPhoto}
                   alt="Hassane SKIKRI"
                   className="w-full h-full object-cover object-center"
                 />
