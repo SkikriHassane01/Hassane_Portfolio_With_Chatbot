@@ -1,6 +1,5 @@
 name: Deploy to GitHub Pages
 
-# Trigger this paths on push to main branch
 on:
   push:
     branches: [ main ]
@@ -14,34 +13,48 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
     
     steps:
-      # Step 1: Setup environment
+      # Step 1: Checkout and verify repository structure
       - name: Checkout repository
         uses: actions/checkout@v3
       
+      - name: Verify repository structure
+        run: |
+          echo "Repository structure:"
+          ls -la
+          echo "Frontend directory:"
+          ls -la frontend || echo "Frontend directory not found!"
+          echo "Package files:"
+          find frontend -name "package*.json" || echo "No package.json files found!"
+      
+      # Step 2: Setup Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
       
-      # Step 2: Build the application
+      # Step 3: Build the application
       - name: Install dependencies
-        run: npm ci
+        working-directory: ./frontend
+        run: npm install
       
       - name: Build application
+        working-directory: ./frontend
         env:
           PUBLIC_URL: /${{ github.event.repository.name }}
         run: npm run build
       
-      # Step 3: Prepare and deploy
-      - name: Add .nojekyll file
-        run: touch build/.nojekyll
+      # Step 4: Prepare and deploy
+      - name: Prepare for deployment
+        run: |
+          # Create output directory if needed
+          mkdir -p frontend/build
+          # Add .nojekyll file
+          touch frontend/build/.nojekyll
+          # Verify build output
+          echo "Build directory contents:"
+          ls -la frontend/build || echo "Build directory is empty or doesn't exist!"
       
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
@@ -50,7 +63,7 @@ jobs:
           branch: gh-pages
           clean: true
       
-      # Step 4: Verification
+      # Step 5: Verify deployment
       - name: Deployment complete
         run: |
           echo "✅ Deployment complete!"
