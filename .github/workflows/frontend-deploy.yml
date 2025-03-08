@@ -7,6 +7,10 @@ on:
       - 'frontend/**'
       - '.github/workflows/frontend-deploy.yml'
 
+# Add permissions for GitHub Actions
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -36,3 +40,5 @@ jobs:
         with:
           folder: dist-frontend  # The folder the action should deploy
           branch: gh-pages  # The branch the action should deploy to
+          # Use the built-in token with write permissions we configured above
+          token: ${{ github.token }}
