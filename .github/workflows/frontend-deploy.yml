@@ -1,0 +1,32 @@
+name: Deploy Frontend to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-deploy.yml'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build with Docker
+        working-directory: ./frontend
+        run: |
+          docker build -t portfolio-frontend .
+          docker create --name temp-container portfolio-frontend
+          docker cp temp-container:/usr/share/nginx/html ../dist-frontend
+          docker rm temp-container
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist-frontend  # The folder the action should deploy
+          branch: gh-pages  # The branch the action should deploy to
