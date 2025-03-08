@@ -39,16 +39,18 @@ jobs:
           docker create --name temp-container portfolio-frontend
           docker cp temp-container:/usr/share/nginx/html ../dist-frontend
           docker rm temp-container
-          
-      - name: Debug build output
+      
+      # Ensure the public/assets directory is correctly copied
+      - name: Copy public assets if they exist
         run: |
-          echo "Checking build output structure:"
-          ls -la ./dist-frontend
-          echo "Checking for images:"
-          find ./dist-frontend -type f -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.svg" -o -name "*.gif"
-          
-      - name: Ensure .nojekyll exists
-        run: touch ./dist-frontend/.nojekyll
+          if [ -d "./frontend/public" ]; then
+            mkdir -p ./dist-frontend/public
+            cp -r ./frontend/public/* ./dist-frontend/public/ || echo "No files to copy"
+            echo "Public directory contents after copy:"
+            ls -la ./dist-frontend/public || echo "Public directory not created"
+          else
+            echo "No public directory found in frontend"
+          fi
 
       - name: Deploy to GitHub Pages
         id: deployment
@@ -63,4 +65,3 @@ jobs:
           echo "Deployment completed!"
           echo "The site should be available at: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
           echo "If not showing immediately, please wait a few minutes for GitHub Pages to build."
-          echo "Check repository settings → Pages to confirm configuration."
