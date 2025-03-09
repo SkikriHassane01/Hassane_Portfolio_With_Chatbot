@@ -1,0 +1,27 @@
+# Version control
+.git/
+.github/
+.gitignore
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Development
+.vscode
+.idea
+*.md
+tests/
+docs/
+
+# Other
+logs/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.log
+*.pyc

@@ -5,9 +5,9 @@ Werkzeug==2.3.7
 gunicorn==21.2.0
 
 # AI/ML Dependencies
-tensorflow==2.15.0
+tensorflow-cpu==2.15.0
 keras==2.15.0
-tf-keras
+tf-keras==2.15.0
 sentence-transformers>=2.2.2
 nltk==3.8.1
 openai==1.65.4

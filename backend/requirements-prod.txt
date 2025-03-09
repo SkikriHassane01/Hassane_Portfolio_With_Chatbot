@@ -1,0 +1,19 @@
+# Web Framework
+flask==2.3.3
+flask-cors==4.0.0
+werkzeug==2.3.7
+gunicorn==21.2.0
+
+# AI/ML Core Dependencies
+tensorflow-cpu==2.15.0
+sentence-transformers>=2.2.2
+nltk==3.8.1
+numpy==1.24.3
+
+# Azure OpenAI Integration
+openai==1.65.4 
+requests==2.31.0 
+
+# Configuration
+python-dotenv==1.0.0 
+pyyaml==6.0.1 

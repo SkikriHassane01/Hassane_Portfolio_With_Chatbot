@@ -8,7 +8,6 @@ import random
 import sys
 import json
 from sentence_transformers import SentenceTransformer
-from pathlib import Path
 from typing import Dict
 # Add the parent directory to path to import utils
 backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
