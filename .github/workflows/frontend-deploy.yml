@@ -51,18 +51,29 @@ jobs:
           PUBLIC_URL: /${{ github.event.repository.name }}
         run: npm run build
       
-      # Step 4: Prepare and deploy
+      # Step 5: Prepare and deploy
       - name: Add .nojekyll file
-        run: touch build/.nojekyll
+        run: |
+          if [ -d "build" ]; then
+            BUILD_DIR="build"
+          elif [ -d "dist" ]; then
+            BUILD_DIR="dist"
+          else
+            echo "Could not find build directory"
+            exit 1
+          fi
+          
+          echo "Using build directory: $BUILD_DIR"
+          touch $BUILD_DIR/.nojekyll
       
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: build
+          folder: frontend/build # Default to build
           branch: gh-pages
           clean: true
       
-      # Step 5: Verification
+      # Step 6: Verification
       - name: Deployment complete
         run: |
           echo "✅ Deployment complete!"
