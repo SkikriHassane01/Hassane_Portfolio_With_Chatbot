@@ -57,9 +57,7 @@ htmlcov/
 .mypy_cache/
 
 # Application specific
-backend/models/
 backend/*.h5
-backend/data/
 backend/app.log
 backend/uploads/
 backend\.venv
