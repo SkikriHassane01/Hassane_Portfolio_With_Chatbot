@@ -26,9 +26,10 @@ def create_app():
     app = Flask(__name__)
     
     # Step 2: Enable CORS for API endpoints
-    CORS(app, resources={r"/api/*": {
-        "origins": ["http://localhost:3000"]
-    }})
+    CORS(app, resources={r"/api/*": {"origins": [
+        "http://localhost:3000",  # Development
+        "https://skikrihassane01.github.io" # Production
+    ]}})
     
     # Step 3: Register the chat blueprint
     logger.info("Registering chat routes blueprint")

@@ -13,7 +13,7 @@ COPY requirements-prod.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements-prod.txt
 
 # Create final image
-FROM python:3.10-slim As final
+FROM python:3.10-slim
 
 WORKDIR /app
 
