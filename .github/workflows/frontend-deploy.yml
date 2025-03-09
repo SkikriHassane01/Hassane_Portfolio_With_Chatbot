@@ -1,6 +1,5 @@
-name: Deploy to GitHub Pages
+name: Deploy Frontend to GitHub Pages
 
-# Trigger this paths on push to main branch
 on:
   push:
     branches: [ main ]
@@ -14,67 +13,36 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
-    
     steps:
-      # Step 1: Setup environment
-      - name: Checkout repository
+      # Step 1: Get the code
+      - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-      
-      # Step 2: Cache dependencies - only if package-lock exists
-      - name: Cache npm dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-      
-      # Step 3: Build the application
-      - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
-      
-      - name: Build application
+
+      # Step 2: Build with Docker
+      - name: Build frontend
+        working-directory: ./frontend
         env:
           PUBLIC_URL: /${{ github.event.repository.name }}
-        run: npm run build
-      
-      # Step 5: Prepare and deploy
-      - name: Add .nojekyll file
         run: |
-          if [ -d "build" ]; then
-            BUILD_DIR="build"
-          elif [ -d "dist" ]; then
-            BUILD_DIR="dist"
-          else
-            echo "Could not find build directory"
-            exit 1
-          fi
+          # Build with Docker
+          docker build --build-arg PUBLIC_URL=/${{ github.event.repository.name }} -t portfolio-frontend .
+          docker create --name temp-container portfolio-frontend
+          docker cp temp-container:/usr/share/nginx/html ../dist-frontend
+          docker rm temp-container
           
-          echo "Using build directory: $BUILD_DIR"
-          touch $BUILD_DIR/.nojekyll
-      
+          # Create .nojekyll file
+          touch ../dist-frontend/.nojekyll
+
+      # Step 3: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: frontend/build # Default to build
+          folder: dist-frontend
           branch: gh-pages
           clean: true
-      
-      # Step 6: Verification
-      - name: Deployment complete
+
+      # Step 4: Show deployment info
+      - name: Deployment info
         run: |
           echo "✅ Deployment complete!"
-          echo "📱 Site available at: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo "🔗 Site URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
