@@ -89,7 +89,7 @@ export function useChat() {
       let errorText = 'Sorry, there was a problem connecting to the chatbot.';
       
       if (err.message === 'Failed to fetch') {
-        errorText = 'Unable to connect to the chatbot server. Please make sure the backend server is running on port 5000.';
+        errorText = 'The chatbot service is currently offline as the Azure service has been temporarily paused due to cost considerations. Thank you for your understanding.';
       }
       
       setError(err.message || 'Failed to send message');

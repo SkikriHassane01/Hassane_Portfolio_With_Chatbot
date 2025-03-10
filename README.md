@@ -1,7 +1,7 @@
 # Portfolio Website with AI Chatbot
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![License](https://img.shields.io/badge/license-Boost_Software_License-green)
+![License](https://img.shields.io/badge/license-MIT-green)
 ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.2-38B2AC?logo=tailwind-css)
 ![Flask](https://img.shields.io/badge/Flask-2.3.3-000000?logo=flask)
@@ -9,7 +9,7 @@
 
 A modern, responsive portfolio website with an integrated AI-powered chatbot built using React, Tailwind CSS, and Flask. The chatbot utilizes a hybrid approach combining TensorFlow for intent classification and Azure OpenAI for advanced responses.
 
-![Portfolio Website Preview](https://via.placeholder.com/800x450.png?text=Portfolio+Website+Preview)
+![Portfolio Website Preview](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWIyYzI4aXZkNWJmbGJtZWxkc3Rxb2hoNWVoNHBpdWFqenk3eXBmbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/vokeEQ13s71BdYpySM/giphy.gif)
 
 ## 📋 Table of Contents
 
@@ -153,20 +153,16 @@ cd portfolio-website
 ### Frontend Setup
 
 ```bash
-# Navigate to frontend directory
 cd frontend
 
-# Install dependencies
 npm install
 ```
 
 ### Backend Setup
 
 ```bash
-# Navigate to backend directory from the project root
 cd backend
 
-# Create and activate virtual environment
 python -m venv venv
 
 venv\Scripts\activate
@@ -174,101 +170,48 @@ venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Create a .env file for environment variables
-cp .env.example .env
-
-# Update the .env file with your Azure OpenAI credentials
-```
-
-## 💻 Development
-
-### Running Frontend Development Server
-
-```bash
-# From the frontend directory
-npm run dev
-
-# This will start the development server on http://localhost:3000
-```
-
-### Running Backend Development Server
-
-```bash
-# From the backend directory with virtual environment activated
-python app.py
-
-# This will start the Flask server on http://localhost:5000
-```
-
-### Building for Production
-
-```bash
-# Frontend build
-cd frontend
-npm run build
-
-# The build artifacts will be stored in the frontend/dist/ directory
 ```
 
 ## 🌐 Deployment
 
-### Docker Deployment
-
-We use Docker for containerization, making deployment consistent across environments.
-
-```bash
-# From the project root
-docker-compose up --build
-
-# This will build and start both frontend and backend containers
-```
-
-### Digital Ocean Deployment
-
-For detailed instructions on deploying to Digital Ocean App Platform, see the [deployment guide](docs/deployment.md).
-
-### Domain Configuration
-
-For instructions on configuring a custom domain with Namecheap, see the [domain setup guide](docs/domain-setup.md).
-
+For detailed instructions on deployment, see the [deployment guide](docs/deployment.md).
 
 ## 📁 Folder Structure
 
 ```
 portfolio-website/
-├── frontend/                  # React frontend application
-│   ├── public/                # Static files
+├── frontend/
+│   ├── public/
 │   ├── src/
 │   │   ├── components/        # React components
 │   │   │   ├── chatbot/       # Chatbot components
 │   │   │   ├── common/        # Reusable components
 │   │   │   ├── layout/        # Layout components
 │   │   │   └── sections/      # Portfolio section components
-│   │   ├── context/           # React context providers
-│   │   ├── hooks/             # Custom React hooks
-│   │   ├── styles/            # CSS files
-│   │   ├── utils/             # Utility functions
-│   │   ├── App.jsx            # Main application component
-│   │   └── main.jsx           # Application entry point
-│   ├── index.html             # HTML template
-│   ├── package.json           # Frontend dependencies
-│   ├── tailwind.config.js     # Tailwind CSS configuration
-│   └── vite.config.js         # Vite configuration
+│   │   ├── context/
+│   │   ├── hooks/
+│   │   ├── styles/
+│   │   ├── utils/
+│   │   ├── App.jsx
+│   │   └── main.jsx 
+│   ├── package.json
+│   ├── tailwind.config.js
+│   └── vite.config.js
 │
-├── backend/                   # Flask backend application
-│   ├── data/                  # Data files
-│   │   └── intents.json       # Chatbot training data
-│   ├── models/                # Trained ML models
+├── backend/
+│   ├── data/ 
+│   │   └── intents.json 
+│   ├── models/ 
 │   ├── src/
-│   │   ├── prediction/        # Intent classification
-│   │   ├── routes/            # API endpoints
-│   │   ├── services/          # Business logic
-│   │   └── utils/             # Utility functions
-│   ├── app.py                 # Flask application
-│   ├── requirements.txt       # Python dependencies
-│   └── wsgi.py                # WSGI entry point
+│   │   ├── prediction/   
+│   │   ├── routes/        
+│   │   ├── services/    
+│   │   └── utils/          
+│   ├── app.py              
+│   ├── requirements.txt   
 │
-├── docker-compose.yml         # Docker Compose configuration
+├── .github/workflows/         # GitHub Actions workflows
+│   ├── deploy-frontend.yml    # Frontend deployment workflow
 ├── .gitignore                 # Git ignore file
 ├── LICENSE                    # License file
 └── README.md                  # Project documentation

@@ -14,6 +14,7 @@ import {
   Loader
 } from 'lucide-react';
 
+import resumePDF from '../../assets/docs/Skikri_Hassane_CV.pdf';
 const ContactSection = () => {
   // Form state
   const [formData, setFormData] = useState({
@@ -498,7 +499,7 @@ const ContactSection = () => {
 
           <div className="mt-6">
             <motion.a
-              href="/Hassane_Skikri_CV.pdf"
+              href={resumePDF}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"

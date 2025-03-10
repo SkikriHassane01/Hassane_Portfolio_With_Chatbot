@@ -342,22 +342,22 @@ const ChatWindow = () => {
     <div className={`fixed z-50 flex flex-col items-end ${
       isFullScreen 
         ? 'inset-0 bg-black bg-opacity-50' 
-        : 'bottom-5 right-5'
+        : 'bottom-2 sm:bottom-5 right-2 sm:right-5'
     }`}>
       {/* Minimized Chat Window */}
       <AnimatePresence>
         {isMinimized && (
           <motion.div
-            className="flex items-center mb-4 bg-white dark:bg-gray-800 rounded-full shadow-md cursor-pointer pr-2 pl-4 py-2"
+            className="flex items-center mb-2 sm:mb-4 bg-white dark:bg-gray-800 rounded-full shadow-md cursor-pointer pr-2 pl-3 sm:pl-4 py-2"
             variants={minimizedVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
             onClick={() => setIsMinimized(false)}
           >
-            <div className="flex items-center mr-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-              <span className="font-medium text-gray-800 dark:text-white">Chat with Assistant</span>
+            <div className="flex items-center mr-1 sm:mr-2">
+              <span className="w-2 h-2 bg-green-500 rounded-full mr-1 sm:mr-2"></span>
+              <span className="font-medium text-gray-800 dark:text-white text-xs sm:text-sm">Chat with Assistant</span>
             </div>
             <motion.button
               className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -369,7 +369,7 @@ const ChatWindow = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
-              <X className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+              <X className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500 dark:text-gray-400" />
             </motion.button>
           </motion.div>
         )}
@@ -382,61 +382,61 @@ const ChatWindow = () => {
             className={`${
               isFullScreen 
                 ? 'w-full h-full max-w-full rounded-none m-0' 
-                : 'mb-4 w-full max-w-md rounded-xl max-h-[calc(100vh-120px)] h-550px'
+                : 'mb-2 sm:mb-4 w-[85vw] sm:w-full max-w-[85vw] sm:max-w-md rounded-lg sm:rounded-xl max-h-[80vh] sm:max-h-[calc(100vh-120px)]'
             } bg-white dark:bg-gray-800 shadow-lg flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700`}
             variants={chatWindowVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
-            style={!isFullScreen ? { height: '550px' } : {}}
+            style={!isFullScreen ? { height: 'min(550px, 80vh)' } : {}}
           >
             {/* Chat Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between p-2 sm:p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center">
-                <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mr-3">
-                  <MessageSquare className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mr-2 sm:mr-3">
+                  <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-800 dark:text-white">Portfolio Assistant</h3>
-                  <div className="flex items-center text-sm text-green-600 dark:text-green-400">
-                    <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                  <h3 className="font-medium text-sm sm:text-base text-gray-800 dark:text-white">Portfolio Assistant</h3>
+                  <div className="flex items-center text-xs sm:text-sm text-green-600 dark:text-green-400">
+                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full mr-1 sm:mr-2"></span>
                     <span>Online</span>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 <motion.button
-                  className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
+                  className="p-1 sm:p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
                   onClick={toggleFullScreen}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   aria-label={isFullScreen ? "Exit full screen" : "Full screen"}
                 >
                   {isFullScreen ? (
-                    <Minimize2 className="h-5 w-5" />
+                    <Minimize2 className="h-4 w-4 sm:h-5 sm:w-5" />
                   ) : (
-                    <Maximize2 className="h-5 w-5" />
+                    <Maximize2 className="h-4 w-4 sm:h-5 sm:w-5" />
                   )}
                 </motion.button>
                 {!isFullScreen && (
                   <motion.button
-                    className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
+                    className="p-1 sm:p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
                     onClick={minimizeChat}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     aria-label="Minimize chat"
                   >
-                    <Minimize2 className="h-5 w-5" />
+                    <Minimize2 className="h-4 w-4 sm:h-5 sm:w-5" />
                   </motion.button>
                 )}
                 <motion.button
-                  className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
+                  className="p-1 sm:p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
                   onClick={closeChat}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   aria-label="Close chat"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-4 w-4 sm:h-5 sm:w-5" />
                 </motion.button>
               </div>
             </div>
@@ -445,7 +445,7 @@ const ChatWindow = () => {
             <div className="flex flex-col flex-1 overflow-hidden">
               {/* Chat Messages Area */}
               <div 
-                className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900 relative"
+                className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-gray-50 dark:bg-gray-900 relative"
                 ref={messagesContainerRef}
               >
                 {messages.map((message, index) => (
@@ -463,21 +463,21 @@ const ChatWindow = () => {
                 {/* Loading indicator */}
                 {isLoading && (
                   <div className="flex items-start max-w-[85%]">
-                    <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mr-3 flex-shrink-0">
-                      <MessageSquare className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
+                      <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <div className="flex space-x-2 p-3 bg-white dark:bg-gray-800 rounded-lg rounded-tl-none shadow-sm max-w-full">
-                      <div className="animate-bounce h-2 w-2 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
-                      <div className="animate-bounce delay-100 h-2 w-2 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
-                      <div className="animate-bounce delay-200 h-2 w-2 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                    <div className="flex space-x-2 p-2 sm:p-3 bg-white dark:bg-gray-800 rounded-lg rounded-tl-none shadow-sm max-w-full">
+                      <div className="animate-bounce h-1.5 w-1.5 sm:h-2 sm:w-2 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                      <div className="animate-bounce delay-100 h-1.5 w-1.5 sm:h-2 sm:w-2 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                      <div className="animate-bounce delay-200 h-1.5 w-1.5 sm:h-2 sm:w-2 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
                     </div>
                   </div>
                 )}
                 
                 {/* Scroll to bottom button - positioned absolutely within the chat window */}
-                <div className="absolute bottom-4 right-4 z-50" style={{ display: showScrollButton ? 'block' : 'none' }}>
+                <div className="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 z-50" style={{ display: showScrollButton ? 'block' : 'none' }}>
                   <motion.button
-                    className="bg-white dark:bg-gray-800 shadow-md rounded-full p-2 
+                    className="bg-white dark:bg-gray-800 shadow-md rounded-full p-1.5 sm:p-2 
                               flex items-center justify-center border border-gray-200 
                               dark:border-gray-700"
                     onClick={scrollToBottom}
@@ -494,7 +494,7 @@ const ChatWindow = () => {
                     transition={{ duration: 0.2 }}
                     whileHover={{ y: -2 }}
                   >
-                    <ChevronDown className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                    <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500 dark:text-gray-400" />
                   </motion.button>
                 </div>
                 
@@ -504,7 +504,7 @@ const ChatWindow = () => {
               
               {/* Quick Reply Buttons - Show suggestions */}
               {currentSuggestions.length > 0 && (
-                <div className="flex-shrink-0 w-full border-t border-gray-200 dark:border-gray-700">
+                <div className="flex-shrink-0 w-full border-t border-gray-200 dark:border-gray-700 overflow-x-auto">
                   <QuickReplyButtons 
                     replies={currentSuggestions} 
                     onReplyClick={handleQuickReplyClick}
@@ -513,7 +513,7 @@ const ChatWindow = () => {
               )}
               
               {/* Chat Input - always at the bottom */}
-              <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
+              <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 p-2 sm:p-4 bg-white dark:bg-gray-800">
                 <ChatInput 
                   onSendMessage={sendMessage} 
                   isLoading={isLoading}
@@ -527,7 +527,7 @@ const ChatWindow = () => {
       {/* Chat Button - hidden in fullscreen mode */}
       {!isFullScreen && (
         <motion.button
-          className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg ${
+          className={`flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-lg ${
             isOpen || isMinimized 
               ? 'bg-gray-700 dark:bg-gray-700 text-white' 
               : 'bg-blue-600 dark:bg-blue-600 text-white'
@@ -541,9 +541,9 @@ const ChatWindow = () => {
           aria-label="Toggle chat" 
         >
           {isOpen || isMinimized ? (
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5 sm:h-6 sm:w-6" />
           ) : (
-            <MessageSquare className="h-6 w-6" />
+            <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6" />
           )}
         </motion.button>
       )}

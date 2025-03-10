@@ -1,86 +1,158 @@
-# Deployment Process 
+# Deployment Guide
 
-This guide provides straightforward instructions for deploying your portfolio website using Docker containers to GitHub Pages (frontend) and Azure (backend).
+This guide provides step-by-step instructions for deploying the portfolio website with AI chatbot using Docker containers, Azure App Service, and GitHub Pages.
 
-## Overview
 
-1. Build Docker images for both frontend and backend
-2. Deploy frontend to GitHub Pages using GitHub Actions
-3. Deploy backend to Azure App Service (Docker container)
-4. Connect the frontend and backend
+## Backend Deployment to Azure App Service
 
-## Prerequisites
+### Step 1: Containerize the Backend
 
-- Docker installed on your local machine
-- GitHub account with GitHub Actions enabled
-- Azure account
-
-## Frontend Deployment (GitHub Pages with Docker)
-
-### 1. Create Frontend Dockerfile
-
-Create `frontend/Dockerfile`:
+1. Create/update the `Dockerfile` in the backend directory:
 
 ```dockerfile
-# Build stage
-FROM node:18-alpine as build
+FROM python:3.9-slim
 
 WORKDIR /app
 
-# Copy package files and install dependencies
-COPY package.json package-lock.json ./
-RUN npm ci
-
-# Copy source code
-COPY . .
-
-# Build the app
-RUN npm run build
-
-# Serve stage - use nginx to serve static files
-FROM nginx:alpine
-
-# Copy built files from build stage
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+....
 ```
 
-### 2. Create Nginx Configuration
+2. Build and test the Docker container locally:
 
-Create `frontend/nginx.conf`:
-
-```nginx
-server {
-    listen 80;
-    
-    location / {
-        root /usr/share/nginx/html;
-        index index.html index.htm;
-        try_files $uri $uri/ /index.html;
-    }
-}
+```bash
+cd backend
+docker build -t portfolio-backend:latest .
+docker run -p 8000:8000 -e AZURE_OPENAI_KEY=your-key portfolio-backend:latest
 ```
 
-### 3. Configure API URL
+3. Verify it works by accessing `http://localhost:8000`
 
-Create `.env.production` in your frontend directory:
+### Step 2: Create Azure Container Registry (ACR)
+
+```bash
+# Login to Azure
+az login
+
+# Create resource group if needed
+az group create --name portfolio-resource-group --location eastus
+
+# Create Azure Container Registry
+az acr create --resource-group portfolio-resource-group --name portfolioacr --sku Basic --admin-enabled true
+
+# Get ACR credentials
+az acr credential show --name portfolioacr
+```
+
+Make note of the username and one of the passwords shown.
+
+### Step 3: Push the Container to ACR
+
+```bash
+# Login to your ACR
+docker login portfolioacr.azurecr.io --username portfolioacr --password <password>
+
+# Tag your local image
+docker tag portfolio-backend:latest portfolioacr.azurecr.io/portfolio-backend:latest
+
+# Push the image to ACR
+docker push portfolioacr.azurecr.io/portfolio-backend:latest
+```
+
+### Step 4: Create and Configure the Azure App Service
+
+```bash
+# Create App Service Plan (Linux)
+az appservice plan create --resource-group portfolio-resource-group --name portfolio-service-plan --is-linux --sku B1
+
+# Create Web App for Containers
+az webapp create --resource-group portfolio-resource-group \
+  --plan portfolio-service-plan \
+  --name your-backend-app-name \
+  --deployment-container-image-name portfolioacr.azurecr.io/portfolio-backend:latest
+
+# Configure the container registry settings
+az webapp config container set \
+  --resource-group portfolio-resource-group \
+  --name your-backend-app-name \
+  --docker-custom-image-name portfolioacr.azurecr.io/portfolio-backend:latest \
+  --docker-registry-server-url https://portfolioacr.azurecr.io \
+  --docker-registry-server-user portfolioacr \
+  --docker-registry-server-password <password>
+```
+
+### Step 5: Configure Environment Variables
+
+```bash
+# Set environment variables for the app service
+az webapp config appsettings set --resource-group portfolio-resource-group --name your-backend-app-name --settings \
+  AZURE_OPENAI_KEY=your-openai-key \
+  AZURE_OPENAI_ENDPOINT=your-openai-endpoint \
+  AZURE_OPENAI_DEPLOYMENT_NAME=your-deployment-name \
+  FLASK_ENV=production \
+  WEBSITES_PORT=8000
+```
+
+### Step 6: Enable CORS for GitHub Pages
+
+```bash
+# Set CORS for GitHub Pages domain
+az webapp cors add --resource-group portfolio-resource-group --name your-backend-app-name \
+  --allowed-origins "https://your-github-username.github.io"
+```
+
+Also update your Flask app to handle CORS:
+
+```python
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": [
+    "http://localhost:3000",
+    "https://your-github-username.github.io"
+]}})
+```
+
+### Step 7: Restart the App Service
+
+```bash
+# Restart the app service to apply changes
+az webapp restart --resource-group portfolio-resource-group --name your-backend-app-name
+```
+
+Your backend API should now be accessible at: `https://your-backend-app-name.azurewebsites.net/api`
+
+## Frontend Deployment to GitHub Pages
+
+### Step 1: Update API URL in Frontend
+
+Update your `.env` file in the frontend directory:
 
 ```
-VITE_API_URL=https://your-backend-name.azurewebsites.net
+VITE_API_URL=https://your-backend-app-name.azurewebsites.net/api
 ```
 
-### 4. Set Up GitHub Actions for Frontend
+### Step 2: Configure GitHub Repository
+
+1. Ensure your frontend builds correctly with the API URL:
+
+```bash
+cd frontend
+npm install
+npm run build
+```
+
+2. Create a `.github/workflows` directory if it doesn't exist:
+
+```bash
+mkdir -p .github/workflows
+```
+
+### Step 3: Create GitHub Actions Workflow File
 
 Create `.github/workflows/deploy-frontend.yml`:
 
 ```yaml
-name: Deploy Frontend
+name: Deploy Frontend to GitHub Pages
 
 on:
   push:
@@ -99,14 +171,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Build Frontend
+      - name: Install and Build
+        working-directory: ./frontend
         run: |
-          cd frontend
           npm ci
           npm run build
         env:
-          VITE_API_URL: ${{ secrets.AZURE_BACKEND_URL }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
@@ -115,171 +189,46 @@ jobs:
           branch: gh-pages
 ```
 
-## Backend Deployment (Azure with Docker)
+### Step 4: Configure GitHub Repository Secrets
 
-### 1. Create Backend Dockerfile
+1. Go to your GitHub repository settings
+2. Navigate to "Secrets and variables" > "Actions"
+3. Add a new repository secret:
+   - Name: `VITE_API_URL`
+   - Value: `https://your-backend-app-name.azurewebsites.net/api`
 
-Create `backend/Dockerfile`:
+### Step 5: Enable GitHub Pages
 
-```dockerfile
-FROM python:3.9-slim
+1. Go to your GitHub repository settings
+2. Navigate to "Pages"
+3. Under "Source", select "Deploy from a branch"
+4. Select the "gh-pages" branch and "/ (root)" folder
+5. Click "Save"
 
-WORKDIR /app
-
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application code
-COPY . .
-
-# Download NLTK data
-RUN python -c "import nltk; nltk.download('punkt'); nltk.download('wordnet'); nltk.download('omw-1.4')"
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV FLASK_ENV=production
-
-# Expose port
-EXPOSE 5000
-
-# Run with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "wsgi:app"]
-```
-
-### 2. Update CORS Settings
-
-In your backend Flask app, update CORS settings to allow GitHub Pages:
-
-```python
-from flask_cors import CORS
-
-# Configure CORS
-CORS(app, resources={r"/api/*": {"origins": [
-    "http://localhost:3000",  # Development
-    "https://yourusername.github.io"  # Production
-]}})
-```
-
-### 3. Deploy Backend to Azure (Portal Method)
-
-1. **Login to Azure Portal**
-   - Go to [portal.azure.com](https://portal.azure.com)
-
-2. **Create App Service**
-   - Click "Create a resource"
-   - Search for "Web App for Containers"
-   - Click "Create"
-
-3. **Configure App Service**
-   - **Basics**:
-     - Resource Group: Create new
-     - Name: your-backend-name
-     - Publish: Docker Container
-     - Operating System: Linux
-     - Region: Select nearest region
-   - **Docker**:
-     - Options: Single Container
-     - Source: Quickstart
-     - Image and tag: Will update later
-   - Click "Review + create", then "Create"
-
-4. **Configure Container Settings**
-   - Once created, go to your App Service
-   - Navigate to "Settings > Configuration"
-   - Add these Application settings:
-     - `AZURE_OPENAI_BASE_URL`: Your Azure OpenAI URL
-     - `AZURE_OPENAI_API_KEY`: Your Azure OpenAI key
-     - `FLASK_ENV`: production
-     - `SECRET_KEY`: Random string
-     - `CONFIDENCE_THRESHOLD`: 0.7
-   - Click "Save"
-
-5. **Deploy Container (CLI Method)**
-   - Build and push your Docker image:
+### Step 6: Push Changes and Trigger Deployment
 
 ```bash
-# Login to Azure
-az login
+# Commit your changes
+git add .
+git commit -m "Setup deployment workflow"
 
-# Create Azure Container Registry (ACR)
-az acr create --name yourRegistry --resource-group your-resource-group --sku Basic --admin-enabled true
-
-# Login to ACR
-az acr login --name yourRegistry
-
-# Build and tag your image
-docker build -t yourRegistry.azurecr.io/portfolio-backend:latest ./backend
-
-# Push image to ACR
-docker push yourRegistry.azurecr.io/portfolio-backend:latest
-
-# Configure App Service to use your container
-az webapp config container set --name your-backend-name --resource-group your-resource-group --docker-custom-image-name yourRegistry.azurecr.io/portfolio-backend:latest --docker-registry-server-url https://yourRegistry.azurecr.io --docker-registry-server-user yourRegistry --docker-registry-server-password $(az acr credential show --name yourRegistry --query passwords[0].value -o tsv)
+# Push to GitHub
+git push origin main
 ```
 
-### 4. GitHub Actions for Backend (Alternative)
+This will trigger the GitHub Action to build and deploy your frontend.
 
-Create `.github/workflows/deploy-backend.yml`:
+### Step 7: Configure Custom Domain (Optional)
 
-```yaml
-name: Deploy Backend to Azure
+1. In your GitHub repository, go to "Settings" > "Pages"
+2. Under "Custom domain", enter your domain name
+3. Click "Save"
+4. Update your DNS settings with your domain provider:
+   - Add an A record pointing to GitHub Pages IPs
+   - Or add a CNAME record pointing to `your-github-username.github.io`
 
-on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'backend/**'
+## Verifying the Deployment
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: 'Login to Azure'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          
-      - name: 'Build and Push Docker Image'
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-      
-      - run: |
-          docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/portfolio-backend:${{ github.sha }} ./backend
-          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/portfolio-backend:${{ github.sha }}
-      
-      - name: 'Deploy to Azure App Service'
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'your-backend-name'
-          images: '${{ secrets.REGISTRY_LOGIN_SERVER }}/portfolio-backend:${{ github.sha }}'
-```
-
-## Connecting Frontend and Backend
-
-### 1. Update API References in Frontend
-
-In `useChat.js` or wherever you make API calls:
-
-```javascript
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-// When making API calls
-fetch(`${API_URL}/api/chat`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ message: messageText })
-})
-```
-
-### 2. Testing the Connection
-
-1. Deploy both frontend and backend
-2. Access your frontend at `https://yourusername.github.io/portfolio-website`
-3. Test the chatbot functionality to ensure it connects to the backend
+1. Frontend: Visit `https://your-github-username.github.io/your-repo-name` or your custom domain
+2. Backend API: Test with a tool like Postman at `https://your-backend-app-name.azurewebsites.net/api/health`
+3. Test the chatbot on your deployed frontend to ensure it connects to the backend
