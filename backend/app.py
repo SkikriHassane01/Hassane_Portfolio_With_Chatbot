@@ -26,15 +26,25 @@ def create_app():
     app = Flask(__name__)
     
     # Step 2: Enable CORS for API endpoints
-    CORS(app, resources={r"/api/*": {"origins": [
-        "http://localhost:3000",  # Development
-        "https://skikrihassane01.github.io" # Production
-    ]}})
-    
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
     # Step 3: Register the chat blueprint
     logger.info("Registering chat routes blueprint")
     app.register_blueprint(chat_bp)
-    
+
+    @app.after_request
+    def after_request(response):
+        origin = request.headers.get('Origin')
+        allowed_origins = ["http://localhost:3000", "http://127.0.0.1:3000", "https://skikrihassane01.github.io"]
+        
+        if origin in allowed_origins:
+            response.headers.add('Access-Control-Allow-Origin', origin)
+        else:
+            # For development, you can be more permissive
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
     # Step 4: Define the main index route
     @app.route('/')
     def index():
@@ -94,7 +104,7 @@ app = create_app()
 
 if __name__ == '__main__':
     # Get port from environment or use default
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 8000))
     debug = config.DEBUG
     
     # Log startup information

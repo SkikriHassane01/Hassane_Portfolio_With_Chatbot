@@ -1,6 +1,6 @@
 // src/hooks/useChat.js
 import { useState, useCallback, useEffect, useRef } from 'react';
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = 'https://skikrihassane-ctgdd4fqgjcvajbc.francecentral-01.azurewebsites.net' || 'http://localhost:8000';
 
 export function useChat() {
   const [messages, setMessages] = useState([]);
