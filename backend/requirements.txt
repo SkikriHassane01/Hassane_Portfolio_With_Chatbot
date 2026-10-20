@@ -5,7 +5,7 @@ Werkzeug==2.3.7
 gunicorn==21.2.0
 
 # AI/ML Dependencies
-tensorflow-cpu==2.15.0
+tensorflow-cpu
 keras==2.15.0
 tf-keras==2.15.0
 sentence-transformers>=2.2.2
